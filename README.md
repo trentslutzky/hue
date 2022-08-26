@@ -13,4 +13,6 @@ Hue is a tool that uses a central colorscheme to inject colors into your dotfile
 
 Simply create a colorscheme in a single configuration file using a simple layout to define each color in your colorscheme.
 
-Then, create templates to tell hue which files to inject the colors, and where the colors go within those files
+Then, create templates to tell hue which files to inject the colors, and where the colors go within those files. 
+
+This makes it possible to configure your entire system's colorscheme from a single file, and update/change those colorschemes from a simple terminal command.
