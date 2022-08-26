@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from pretty import print_colors
 from generate import make_colors, generate_files
 from pathlib import Path
