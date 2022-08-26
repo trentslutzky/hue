@@ -2,3 +2,5 @@
 
 
 ## A better linux colorscheme generator
+
+<img src="https://user-images.githubusercontent.com/49824803/186808895-477cb8f3-cc5f-4708-a8c3-c6b2ec720b9c.png" width="500">
