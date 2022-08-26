@@ -10,21 +10,24 @@ def main():
     if(tigetnum("colors") < 256):
         print("Your teminal does not support 256 colors!")
         return
-
-    print("\nTHEME GENERATOR\n\nGenerating colorscheme")
-
-    colors_path = Path(environ['HOME']+"/.config/theme_generator/colors")
-    overrides_path = Path(environ['HOME']+"/.config/theme_generator/overrides")
+    
+    config_dir_path = Path(environ['HOME']+"/.config/hue")
+    colors_path = Path(environ['HOME']+"/.config/hue/colors")
+    overrides_path = Path(environ['HOME']+"/.config/hue/overrides")
+    
+    if config_dir_path.is_dir() == False:
+        print("no config folder found. creating one at",config_dir_path)
+        config_dir_path.mkdir()
 
     if colors_path.is_file() == False:
-        print('\nno colors file found. creating one at',colors_path,'\n')
+        print('no colors file found. creating one at',colors_path,'\n')
         colors_path.touch()
 
     file = open(colors_path, 'r')
     lines = file.readlines()
 
     if(len(lines) == 0):
-        print("Colors file is empty. Quitting")
+        print("No colors defined! Add some colors to",colors_path)
         return
 
     colors,longest = make_colors(lines)

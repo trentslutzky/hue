@@ -31,7 +31,7 @@ def make_colors(lines):
 def generate_files(colors):
     print("generating files from templates")
 
-    templates_path = Path(environ['HOME']+"/.config/theme_generator/templates/")
+    templates_path = Path(environ['HOME']+"/.config/hue/templates/")
     if(templates_path.is_dir() == False):
         print_warning("No templates found in "+str(templates_path))
         templates_path.mkdir()
