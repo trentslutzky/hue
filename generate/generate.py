@@ -29,7 +29,7 @@ def make_colors(lines):
     return colors, longest
 
 def generate_files(colors):
-    print("generating files from templates")
+    print("Generating files from templates\n")
 
     templates_path = Path(environ['HOME']+"/.config/hue/templates/")
     if(templates_path.is_dir() == False):
