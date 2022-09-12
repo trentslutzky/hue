@@ -2,7 +2,7 @@ from pathlib import Path
 from os import environ
 import re
 
-from pretty import print_warning, RESET, get_color_escape
+from prints import print_warning, RESET, get_color_escape
 
 def make_colors(lines):
     longest = 0
@@ -28,8 +28,9 @@ def make_colors(lines):
 
     return colors, longest
 
-def generate_files(colors):
-    print("Generating files from templates\n")
+def generate_files(colors,args):
+    if not args.q:
+        print("Generating files from templates\n")
 
     templates_path = Path(environ['HOME']+"/.config/hue/templates/")
     if(templates_path.is_dir() == False):
@@ -41,17 +42,19 @@ def generate_files(colors):
     templates = []
     for t in files:
         templates.append(t)
-        print("Found template: "+t.name)
+        if not args.q:
+            print("Found template: "+t.name)
 
     if(len(templates) == 0):
         print_warning("No templates found in "+str(templates_path))
         return
     
     for template in templates:
-        generate_template_output(template,colors)
+        generate_template_output(template,colors,args)
 
-def generate_template_output(template,colors):
-    print(f"Creating files from {template.name}")
+def generate_template_output(template,colors,args):
+    if not args.q:
+        print(f"Creating files from {template.name}")
     file = open(template, 'r')
     lines = file.readlines()
 
@@ -61,7 +64,8 @@ def generate_template_output(template,colors):
 
     new_lines = []
 
-    print("  -> Looking for keywords",end="\n  ")
+    if not args.q:
+        print("  -> Looking for keywords",end="\n  ")
     for line in lines:
         line_split = line.split(" ")
 
@@ -71,7 +75,8 @@ def generate_template_output(template,colors):
 
         if("#[target]" in line):
             target = line_split[1].strip()
-            print(f"  -> target: {target}")
+            if not args.q:
+                print(f"  -> target: {target}")
             continue
 
         keywords = re.findall(r'\{\{.*?\}\}', line)
@@ -82,28 +87,32 @@ def generate_template_output(template,colors):
 
         for keyword in keywords:
             keyword_name = re.sub('[{{}}]',"",keyword) 
+            color_hex = ""
+            color_rgb = ""
 
             if(keyword_name in colors):
                 color_hex = colors[keyword_name]["color_hex"]
                 color_rgb = colors[keyword_name]["color_rgb"]
                 colors_set += 1
 
-                print(
-                    get_color_escape(
-                        color_rgb[0],
-                        color_rgb[1],
-                        color_rgb[2]
-                    ) + ".", end=RESET
-                )
+                if not args.q:
+                    print(
+                        get_color_escape(
+                            color_rgb[0],
+                            color_rgb[1],
+                            color_rgb[2]
+                        ) + ".", end=RESET
+                    )
             
             if(not use_hash):
                 color_hex = color_hex.replace("#","")
             line = line.replace(keyword,color_hex)
             new_lines.append(line)
 
-    print()
-    print(f"  -> set {colors_set} colors")
-    print(f"  -> writing to {target}")
+    if not args.q:
+        print()
+        print(f"  -> set {colors_set} colors")
+        print(f"  -> writing to {target}")
 
     output_file = open(target, "w")
     output_file.writelines(new_lines)

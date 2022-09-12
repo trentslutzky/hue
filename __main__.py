@@ -1,57 +1,53 @@
 #!/usr/bin/env python
-from pretty import print_colors
-from generate import make_colors, generate_files
-from pathlib import Path
-from os import environ
 from curses import setupterm, tigetnum
+from os import environ
+from pathlib import Path
+import sys
 
+import args
+import prints
+import generate
+
+# this is a comment
 def main():
+    parser = args.make_parser()
+    arguments = parser.parse_args()
+
+    if len(sys.argv) <= 1:
+        parser.print_help()
+        sys.exit(1)
 
     setupterm()
     if(tigetnum("colors") < 256):
         print("Your teminal does not support 256 colors!")
         return
     
-    config_dir_path = Path(environ['HOME']+"/.config/hue")
-    colors_path = Path(environ['HOME']+"/.config/hue/colors")
-    overrides_path = Path(environ['HOME']+"/.config/hue/overrides")
+    default_theme = arguments.theme
+    variant_light = arguments.light
+
+    paths = {}
+    paths['config_dir'] = Path(environ['HOME']+"/.config/hue/")
+    paths['themes_dir'] = paths['config_dir'].joinpath("themes")
+    paths['templates_dir'] = paths['config_dir'].joinpath("templates")
+    paths['current_theme_dir'] = paths['themes_dir'].joinpath(default_theme)
+    paths['theme_colors'] = paths['current_theme_dir'].joinpath("colors.light" if variant_light else "colors.dark")
+
+    if arguments.themes:
+        prints.print_themes(paths['themes_dir'])
+        sys.exit(1)
+
+    if arguments.preview:
+        colors_lines = open(paths['theme_colors'],'r').readlines()
+        colors,longest = generate.make_colors(colors_lines)
+        prints.print_colors(colors,longest,default_theme)
+        sys.exit(1)
+
+    colors_lines = open(paths['theme_colors'],'r').readlines()
+    colors,longest = generate.make_colors(colors_lines)
+    if not arguments.q:
+        prints.print_colors(colors,longest,default_theme)
+    generate.generate_files(colors,arguments)
     
-    if config_dir_path.is_dir() == False:
-        print("no config folder found. creating one at",config_dir_path)
-        config_dir_path.mkdir()
-
-    if colors_path.is_file() == False:
-        print('no colors file found. creating one at',colors_path,'\n')
-        colors_path.touch()
-
-    file = open(colors_path, 'r')
-    lines = file.readlines()
-
-    if(len(lines) == 0):
-        print("No colors defined! Add some colors to",colors_path)
-        return
-
-    colors,longest = make_colors(lines)
-
-    overrides_colors = {}
-    if overrides_path.is_file():
-        file = open(overrides_path, 'r')
-        lines = file.readlines()
-        if(len(lines) > 0):
-            print("Found overrides. Patching theme.")
-            overrides_colors, _ = make_colors(lines)
-
-    for color in overrides_colors:
-        colors[color] = overrides_colors[color]
-
-    if(len(colors) == 0):
-        return
-
-    print()
-    print_colors(colors,longest)
-    generate_files(colors)
-
-    print("Done!")
 
 if __name__ == "__main__":
     main()

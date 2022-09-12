@@ -1,3 +1,5 @@
+from pathlib import Path
+
 RESET = '\033[0m'
 PURPLE = '\033[95m'
 BLUE = '\033[94m'
@@ -15,7 +17,11 @@ def print_error(text):
 def get_color_escape(r, g, b, background=False):
     return '\033[{};2;{};{};{}m'.format(48 if background else 38, r, g, b)
 
-def print_colors(colors,longest):
+def print_colors(colors,longest,themename=""):
+    if themename:
+        print(f"\ntheme: {themename}\n")
+    else:
+        print()
     print(f" COLOR  {'NAME'.ljust(longest)}   HEX       RGB")
     print(f" -----  {'----'.ljust(longest,'-')}   ---       ---")
 
@@ -36,3 +42,8 @@ def print_colors(colors,longest):
             color['color_rgb'],
         )
     print(RESET)
+
+def print_themes(themes_dir: Path):
+    print("\nthemes\n")
+    for t in themes_dir.iterdir():
+        print(t)
