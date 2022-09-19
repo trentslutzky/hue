@@ -13,7 +13,7 @@ def main():
     parser = args.make_parser()
     arguments = parser.parse_args()
 
-    if len(sys.argv) <= 1:
+    if len(sys.argv) <= 1 or (not arguments.theme and not arguments.theme):
         parser.print_help()
         sys.exit(1)
 
@@ -29,24 +29,28 @@ def main():
     paths['config_dir'] = Path(environ['HOME']+"/.config/hue/")
     paths['themes_dir'] = paths['config_dir'].joinpath("themes")
     paths['templates_dir'] = paths['config_dir'].joinpath("templates")
-    paths['current_theme_dir'] = paths['themes_dir'].joinpath(default_theme)
-    paths['theme_colors'] = paths['current_theme_dir'].joinpath("colors.light" if variant_light else "colors.dark")
 
     if arguments.themes:
         prints.print_themes(paths['themes_dir'])
         sys.exit(1)
 
-    if arguments.preview:
+    paths['current_theme_dir'] = paths['themes_dir'].joinpath(default_theme)
+    paths['theme_colors'] = paths['current_theme_dir'].joinpath("colors.light" if variant_light else "colors.dark")
+
+    try:
+        if arguments.preview:
+            colors_lines = open(paths['theme_colors'],'r').readlines()
+            colors,longest = generate.make_colors(colors_lines)
+            prints.print_colors(colors,longest,default_theme)
+            sys.exit(1)
+
         colors_lines = open(paths['theme_colors'],'r').readlines()
         colors,longest = generate.make_colors(colors_lines)
-        prints.print_colors(colors,longest,default_theme)
-        sys.exit(1)
-
-    colors_lines = open(paths['theme_colors'],'r').readlines()
-    colors,longest = generate.make_colors(colors_lines)
-    if not arguments.q:
-        prints.print_colors(colors,longest,default_theme)
-    generate.generate_files(colors,arguments)
+        if not arguments.q:
+            prints.print_colors(colors,longest,default_theme)
+        generate.generate_files(colors,arguments)
+    except FileNotFoundError:
+        print("Could not find theme",default_theme,('light' if variant_light else ''))
     
 
 if __name__ == "__main__":
