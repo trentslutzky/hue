@@ -1,5 +1,6 @@
 import argparse
 
+
 def make_parser():
     parser = argparse.ArgumentParser(
             prog="hue",
@@ -8,12 +9,12 @@ def make_parser():
             )
 
     parser.add_argument(
-            '--preview','-p', 
+            '--preview', '-p', 
             action='store_true',
             help="show generated colors without changing anything")
 
     parser.add_argument(
-            '--themes','-l',
+            '--themes', '-l',
             action='store_true',
             help="list themes available")
 
@@ -24,7 +25,7 @@ def make_parser():
             nargs="?")
 
     parser.add_argument(
-            '--set-default','-d',
+            '--set-default', '-d',
             action='store_true',
             help="set the selected theme as the new default")
 
@@ -37,6 +38,16 @@ def make_parser():
             '--light',
             action='store_true',
             help="select theme variant light")
+
+    parser.add_argument(
+            '--switch', '-s',
+            action='store_true',
+            help="switch from dark to light or vice versa")
+
+    parser.add_argument(
+            '--reload', '-r',
+            action='store_true',
+            help="reload templates with the current theme")
 
     parser.add_argument(
             '-q',

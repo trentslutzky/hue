@@ -4,12 +4,13 @@ import re
 
 from prints import print_warning, RESET, get_color_escape
 
+
 def make_colors(lines):
     longest = 0
     colors = {}
 
     for line in lines:
-        line = line.replace("\n","")
+        line = line.replace("\n", "")
         line = re.sub(' +', ' ', line)
         line_split = line.split(" ")
         if len(line_split) < 2:
@@ -18,22 +19,23 @@ def make_colors(lines):
         color_hex = line_split[1]
         color_rgb = tuple(int((color_hex.lstrip("#"))[i:i+2], 16) for i in (0, 2, 4))
 
-        if(len(name) > longest):
+        if (len(name) > longest):
             longest = len(name)
 
         colors[name] = {
-            "color_hex":color_hex,
-            "color_rgb":color_rgb,
+            "color_hex": color_hex,
+            "color_rgb": color_rgb,
         }
 
     return colors, longest
 
-def generate_files(colors,args):
+
+def generate_files(colors, args):
     if not args.q:
         print("Generating files from templates\n")
 
     templates_path = Path(environ['HOME']+"/.config/hue/templates/")
-    if(templates_path.is_dir() == False):
+    if (templates_path.is_dir() is False):
         print_warning("No templates found in "+str(templates_path))
         templates_path.mkdir()
         return
@@ -45,16 +47,17 @@ def generate_files(colors,args):
         if not args.q:
             print("Found template: "+t.name)
 
-    if(len(templates) == 0):
+    if (len(templates) == 0):
         print_warning("No templates found in "+str(templates_path))
         return
-    
-    for template in templates:
-        generate_template_output(template,colors,args)
 
-def generate_template_output(template,colors,args):
+    for template in templates:
+        generate_template_output(template, colors, args)
+
+
+def generate_template_output(template, colors, args):
     if not args.q:
-        print(f"Creating files from {template.name}")
+        print(f"\n{template.name}")
     file = open(template, 'r')
     lines = file.readlines()
 
@@ -65,32 +68,35 @@ def generate_template_output(template,colors,args):
     new_lines = []
 
     if not args.q:
-        print("  -> Looking for keywords",end="\n  ")
+        print("  -> Looking for keywords", end="\n  ")
     for line in lines:
         line_split = line.split(" ")
 
-        if("#[no_hash]" in line):
+        if ("#[no_hash]" in line):
             use_hash = False
             continue
 
-        if("#[target]" in line):
+        if ("#[target]" in line):
             target = line_split[1].strip()
             if not args.q:
                 print(f"  -> target: {target}")
             continue
 
+        if ("#[run]" in line):
+            continue
+
         keywords = re.findall(r'\{\{.*?\}\}', line)
 
-        if(len(keywords) == 0):
+        if (len(keywords) == 0):
             new_lines.append(line)
             continue
 
         for keyword in keywords:
-            keyword_name = re.sub('[{{}}]',"",keyword) 
+            keyword_name = re.sub('[{{}}]', "", keyword)
             color_hex = ""
             color_rgb = ""
 
-            if(keyword_name in colors):
+            if (keyword_name in colors):
                 color_hex = colors[keyword_name]["color_hex"]
                 color_rgb = colors[keyword_name]["color_rgb"]
                 colors_set += 1
@@ -103,10 +109,10 @@ def generate_template_output(template,colors,args):
                             color_rgb[2]
                         ) + ".", end=RESET
                     )
-            
-            if(not use_hash):
-                color_hex = color_hex.replace("#","")
-            line = line.replace(keyword,color_hex)
+
+            if (not use_hash):
+                color_hex = color_hex.replace("#", "")
+            line = line.replace(keyword, color_hex)
             new_lines.append(line)
 
     if not args.q:
