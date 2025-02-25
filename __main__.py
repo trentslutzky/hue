@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import subprocess
 from curses import setupterm, tigetnum
 from os import environ, system
@@ -49,6 +49,10 @@ def main():
 
     build_paths()
 
+    if arguments.themes:
+        prints.print_themes(paths['themes_dir'])
+        sys.exit(1)
+
     try:
         cached_theme_from_file = open(paths['cache_dir'].joinpath("current"), "r").readlines()
         cache_content = cached_theme_from_file[0]
@@ -56,15 +60,12 @@ def main():
         cached_theme = cached_theme.strip()
         cached_variant = cached_variant.strip()
     except FileNotFoundError:
-        print("No cached theme present! Must run once with theme selected. See hue --help")
-        return
+        if not arguments.theme:
+            print("No cached theme present! Must run once with theme selected. See hue --help")
+            return
 
     current_theme = arguments.theme
     variant = "light" if arguments.light else "dark"
-
-    if arguments.themes:
-        prints.print_themes(paths['themes_dir'])
-        sys.exit(1)
 
     if not arguments.theme:
         current_theme = cached_theme
