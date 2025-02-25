@@ -1,0 +1,29 @@
+background #FFFFFF
+background1 #E1EBF5
+background2 #B0CAE5
+background3 #92BEEB
+
+foreground  #515253
+foreground1 #737475
+foreground2 #b7b8b9
+foreground3 #D8D8D8
+
+color1 #E31A1C
+color2 #31A354
+color3 #DCA060
+color4 #3182BD
+color5 #756BB1
+color6 #80B1D3
+
+color1_lighter #515253
+color2_lighter #737475
+color3_lighter #b7b8b9
+color4_lighter #515253
+color5_lighter #737475
+color6_lighter #b7b8b9
+
+color0 #131313
+color0_lighter #1f1f1f
+
+color7 #c5c8c6
+color7_lighter #b1b3b2
