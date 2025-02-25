@@ -50,6 +50,17 @@ def print_colors(colors, longest, themename="", variant="dark"):
 
 
 def print_themes(themes_dir: Path):
-    print("\nthemes\n")
-    for t in themes_dir.iterdir():
-        print(t)
+    print("\nCustom Themes:\n")
+
+    for theme_dir in themes_dir.iterdir():
+        if theme_dir.is_dir():  # Ensure it's a directory
+            theme_name = theme_dir.name
+            variants = []
+
+            if (theme_dir / "colors.light").is_file():
+                variants.append("light")
+            if (theme_dir / "colors.dark").is_file():
+                variants.append("dark")
+
+            variants_str = ", ".join(variants) if variants else "none"
+            print(f"{theme_name} - variants: {variants_str}")

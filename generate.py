@@ -56,8 +56,6 @@ def generate_files(colors, args):
 
 
 def generate_template_output(template, colors, args):
-    if not args.q:
-        print(f"\n{template.name}")
     file = open(template, 'r')
     lines = file.readlines()
 
@@ -67,8 +65,6 @@ def generate_template_output(template, colors, args):
 
     new_lines = []
 
-    if not args.q:
-        print("  -> Looking for keywords", end="\n  ")
     for line in lines:
         line_split = line.split(" ")
 
@@ -78,8 +74,6 @@ def generate_template_output(template, colors, args):
 
         if ("#[target]" in line):
             target = line_split[1].strip()
-            if not args.q:
-                print(f"  -> target: {target}")
             continue
 
         if ("#[run]" in line):
@@ -94,31 +88,15 @@ def generate_template_output(template, colors, args):
         for keyword in keywords:
             keyword_name = re.sub('[{{}}]', "", keyword)
             color_hex = ""
-            color_rgb = ""
 
             if (keyword_name in colors):
                 color_hex = colors[keyword_name]["color_hex"]
-                color_rgb = colors[keyword_name]["color_rgb"]
                 colors_set += 1
-
-                if not args.q:
-                    print(
-                        get_color_escape(
-                            color_rgb[0],
-                            color_rgb[1],
-                            color_rgb[2]
-                        ) + ".", end=RESET
-                    )
 
             if (not use_hash):
                 color_hex = color_hex.replace("#", "")
             line = line.replace(keyword, color_hex)
             new_lines.append(line)
-
-    if not args.q:
-        print()
-        print(f"  -> set {colors_set} colors")
-        print(f"  -> writing to {target}")
 
     output_file = open(target, "w")
     output_file.writelines(new_lines)
